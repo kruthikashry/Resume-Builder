@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Resume Builder - MCA Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #3b82f6;
+            --primary-light: #93c5fd;
+            --secondary: #4f46e5;
+            --dark: #1e293b;
+    --resume-font: 'Georgia', serif;
+            --light: #f8fafc;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--resume-font, 'Poppins', sans-serif);
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            min-height: 100vh;
+        }
+        
+        .resume-container {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .resume-container:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .skill-tag {
+            background-color: var(--primary-light);
+            transition: all 0.2s ease;
+        }
+        
+        .skill-tag:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .print-btn:hover {
+            background-color: var(--secondary);
+        }
+
+        /* Generated resume styles */
+        .resume-template {
+            font-family: var(--resume-font, 'Georgia'), serif;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .resume-header {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .resume-section-title {
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+        }
+    
+.resume-template > div {
+  margin-bottom: 24px;
+}
+
+.resume-template .resume-section-title {
+  margin-bottom: 8px;
+}
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+  }
+  .resume-template {
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm;
+    box-sizing: border-box;
+  }
+}
+
+
+/* FIXED: Ensure proper spacing under section titles and justified alignment */
+#resume-preview p,
+#resume-preview ul,
+#resume-preview li {
+  text-align: justify;
+}
+
+.resume-template p,
+.resume-template ul,
+.resume-template div:not(.resume-section-title) {
+  margin-top: 0.5rem;
+}
+
+.resume-template {
+  line-height: 1.6;
+}
+
+
+/* FINAL FIXES: Improve spacing and layout */
+.resume-section-title {
+  border-bottom: 2px solid var(--primary);
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.25rem;
+}
+
+#resume-preview p,
+#resume-preview ul,
+#resume-preview li,
+#resume-preview h4 {
+  margin-top: 0.4rem;
+  margin-bottom: 0.6rem;
+  text-align: justify;
+}
+
+#resume-preview .grid-cols-2 {
+  gap: 1.5rem;
+  padding-top: 0.5rem;
+}
+
+.resume-template {
+  padding: 32px !important;
+  line-height: 1.6;
+}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.2/tinycolor.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto py-8 px-4">
+        <h1 class="text-3xl font-bold text-center text-blue-600 mb-2">Resume Builder</h1>
+        <p class="text-center text-gray-600 mb-8">MCA Project - Python Resume Generator</p>
+        
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Form Section -->
+            <div class="lg:w-1/2 bg-white rounded-lg p-6 shadow">
+                
+<div class="mt-6">
+  <h2 class="text-lg font-semibold mb-2 text-blue-600">Customize Style</h2>
+  <div class="flex flex-col gap-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Choose Primary Color</label>
+      <input type="color" id="color-picker" value="#3b82f6" class="w-24 h-10 border border-gray-300 rounded-md p-1">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Choose Font</label>
+      <select id="font-picker" class="w-48 px-3 py-2 border border-gray-300 rounded-md">
+        <option value="Poppins">Poppins (Default)</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Arial">Arial</option>
+        <option value="Courier New">Courier New</option>
+        <option value="Verdana">Verdana</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+
+<div class="flex mb-4 space-x-1 bg-gray-100 p-1 rounded">
+                    <button class="tab-button py-2 px-4 rounded active" data-tab="personal">Personal</button>
+                    <button class="tab-button py-2 px-4 rounded" data-tab="education">Education</button>
+                    <button class="tab-button py-2 px-4 rounded" data-tab="experience">Experience</button>
+                    <button class="tab-button py-2 px-4 rounded" data-tab="skills">Skills</button>
+                </div>
+                
+                <!-- Personal Info Tab -->
+                <div id="personal-tab" class="tab-content">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold mb-4 text-blue-600">Personal Information</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <input type="text" id="full-name" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                                <input type="text" id="job-title" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                <input type="tel" id="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                            <input type="text" id="location" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold mb-4 text-blue-600">Profile Image</h2>
+                        <div class="flex items-center space-x-4">
+                            <div class="w-24 h-24 bg-gray-200 rounded-full overflow-hidden flex items-center justify-center">
+                                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/557c4d09-3d51-4f9f-bfc1-3828b2772e2b.png" alt="Profile portrait of a professional individual in business attire" id="profile-image" class="hidden w-full h-full object-cover"/>
+                                <span id="image-placeholder" class="text-gray-500">No Image</span>
+                            </div>
+                            <div>
+                                <input type="file" id="image-upload" accept="image/*" class="hidden">
+                                <button id="upload-btn" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">Upload Photo</button>
+                                <p class="text-xs text-gray-500 mt-1">Recommended: 400x400 px</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold mb-4 text-blue-600">Professional Summary</h2>
+                        <textarea id="summary" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter a brief professional summary..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Education Tab -->
+                <div id="education-tab" class="tab-content hidden">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-600">Education</h2>
+                    <div id="education-container">
+                        <div class="education-entry mb-4 p-4 border border-gray-200 rounded">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Degree</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 degree">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Institution</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 institution">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                    <input type="month" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 start-date">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                    <input type="month" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 end-date">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 description" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="add-education" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md">Add Education</button>
+                </div>
+                
+                <!-- Experience Tab -->
+                <div id="experience-tab" class="tab-content hidden">
+                    
+<div class="flex items-center mb-4">
+  <input type="checkbox" id="toggle-experience-section" class="mr-2" checked>
+  <label for="toggle-experience-section" class="text-sm text-gray-700">Include Professional Experience section in resume</label>
+</div>
+<h2 class="text-xl font-semibold mb-4 text-blue-600">Work Experience</h2>
+                    <div id="experience-container">
+                        <div class="experience-entry mb-4 p-4 border border-gray-200 rounded">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 job-title">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 company">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                    <input type="month" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 start-date">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                    <input type="month" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 end-date">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 description" rows="3" placeholder="Describe your responsibilities and achievements"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="add-experience" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md">Add Experience</button>
+                </div>
+                
+                <!-- Skills Tab -->
+                <div id="skills-tab" class="tab-content hidden">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-600">Skills</h2>
+                    <div class="mb-4">
+                        <div class="flex mb-2">
+                            <input type="text" id="skill-input" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter a skill">
+                            <button id="add-skill" class="px-4 py-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-600">Add</button>
+                        </div>
+                        <div id="skills-container" class="flex flex-wrap gap-2">                        </div>
+                    </div>
+                    
+                    
+                    <h2 class="text-xl font-semibold mb-4 text-blue-600">Soft Skills</h2>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Add Soft Skill</label>
+                        <div class="flex mb-2">
+                            <input type="text" id="soft-skill-input" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Strong communication skills">
+                            <button id="add-soft-skill" class="px-4 py-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-600">Add</button>
+                        </div>
+                        <ul id="soft-skills-list" class="list-disc pl-5 space-y-1 text-sm text-gray-800"></ul>
+                    </div>
+
+
+                    <h2 class="text-xl font-semibold mb-4 text-blue-600">Additional Information</h2>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Projects</label>
+                        <textarea id="projects" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Describe your key projects"></textarea>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Certifications</label>
+                        <textarea id="certifications" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="List your certifications"></textarea>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Languages</label>
+                        <textarea id="languages" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="List languages you speak"></textarea>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between mt-6">
+                    <button id="previous-tab" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md hidden">Previous</button>
+                    <button id="next-tab" class="px-4 py-2 bg-blue-500 text-white hover:bg-blue-600 rounded-md">Next</button>
+                </div>
+            </div>
+            
+            <!-- Preview Section -->
+            <div class="lg:w-1/2">
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-blue-600">Resume Preview</h2>
+                        <button id="print-btn" class="print-btn px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+                            </svg>
+                            Export PDF
+                        </button>
+                    </div>
+                    
+                    <div id="resume-preview" class="resume-template p-6 bg-white border border-gray-200">
+                        <!-- Resume header -->
+                        <div class="resume-header p-4 text-white mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="md:col-span-3">
+                                <h1 id="preview-name" class="text-2xl font-bold">John Doe</h1>
+                                <p id="preview-title" class="text-lg opacity-90">Software Developer</p>
+                            </div>
+                            <div class="flex justify-center md:justify-end">
+                                <div class="w-20 h-20 bg-white rounded-full overflow-hidden">
+                                    <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/6fe1eab3-645a-4910-bf0c-cc30b3a65713.png" alt="Profile portrait of a professional individual in business attire" id="preview-image" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Contact Information -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-6 text-sm">
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                <span id="preview-email">john.doe@example.com</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                </svg>
+                                <span id="preview-phone">(123) 456-7890</span>
+                            </div>
+                            <div class="flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span id="preview-location">New York, NY</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Summary -->
+                        <div class="mb-6">
+                            <h3 class="resume-section-title text-lg font-semibold mb-2">PROFESSIONAL SUMMARY</h3>
+                            <p id="preview-summary" class="text-sm">Experienced software developer with 5+ years of expertise in web development, specializing in JavaScript frameworks and Python. Passionate about creating efficient, scalable applications with intuitive user interfaces.</p>
+                        </div>
+                        
+                        <!-- Skills -->
+                        <div class="mb-6">
+                            <h3 class="resume-section-title text-lg font-semibold mb-2">SKILLS</h3>
+                            <div id="preview-skills" class="flex flex-wrap gap-2">                            </div>
+                        </div>
+                        
+                        
+                        <!-- Soft Skills -->
+                        <div class="mb-6">
+                            <h3 class="resume-section-title text-lg font-semibold mb-2">SOFT SKILLS</h3>
+                            <ul id="preview-soft-skills" class="list-disc pl-5 space-y-1 text-sm text-gray-800"></ul>
+                        </div>
+
+
+                        <!-- Experience -->
+                        <div class="mb-6">
+                            <h3 class="resume-section-title text-lg font-semibold mb-2">PROFESSIONAL EXPERIENCE</h3>
+                            <div id="preview-experience">
+                                <div class="mb-4">
+                                    <div class="flex justify-between">
+                                        <h4 class="font-semibold">Senior Developer</h4>
+                                        <span class="text-sm text-gray-600">Jun 2020 - Present</span>
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">Tech Company Inc.</p>
+                                    <p class="text-sm">Developed and maintained web applications using modern JavaScript frameworks and Python. Led a team of 5 developers in implementing new features. Improved application performance by 40% through code optimization.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Education -->
+                        <div class="mb-6">
+                            <h3 class="resume-section-title text-lg font-semibold mb-2">EDUCATION</h3>
+                            <div id="preview-education">
+                                <div class="mb-4">
+                                    <div class="flex justify-between">
+                                        <h4 class="font-semibold">Master of Computer Applications</h4>
+                                        <span class="text-sm text-gray-600">Aug 2015 - May 2018</span>
+                                    </div>
+                                    <p class="text-sm font-medium text-gray-600">University of Technology</p>
+                                    <p class="text-sm">Specialized in Web Technologies and Software Development</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Additional Info -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                            <div>
+                                <h3 class="resume-section-title text-lg font-semibold mb-2">PROJECTS</h3>
+                                <p id="preview-projects">Developed a resume builder application using modern web technologies. Created an e-commerce platform with payment integration. Built a task management system with real-time updates.</p>
+                            </div>
+                            <div>
+                                <h3 class="resume-section-title text-lg font-semibold mb-2">LANGUAGES</h3>
+                                <p id="preview-languages">English (Fluent), Spanish (Intermediate)</p>
+                                
+                                <h3 class="resume-section-title text-lg font-semibold mb-2 mt-4">CERTIFICATIONS</h3>
+                                <p id="preview-certifications">AWS Certified Developer, Microsoft Certified Professional</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Navigation
+        const tabs = ['personal', 'education', 'experience', 'skills'];
+        let currentTab = 0;
+        
+        function showTab(index) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(`${tabs[index]}-tab`).classList.remove('hidden');
+            document.querySelectorAll('.tab-button')[index].classList.add('active');
+            
+            // Update button visibility
+            document.getElementById('previous-tab').classList.toggle('hidden', index === 0);
+            document.getElementById('next-tab').classList.toggle('hidden', index === tabs.length - 1);
+            
+            // Update button text for last tab
+            document.getElementById('next-tab').textContent = index === tabs.length - 2 ? 'Finish' : 'Next';
+            
+            currentTab = index;
+        }
+        
+        document.querySelectorAll('.tab-button').forEach((button, index) => {
+            button.addEventListener('click', () => {
+                showTab(index);
+            });
+        });
+        
+        document.getElementById('next-tab').addEventListener('click', () => {
+            if (currentTab < tabs.length - 1) {
+                showTab(currentTab + 1);
+            }
+        });
+        
+        document.getElementById('previous-tab').addEventListener('click', () => {
+            if (currentTab > 0) {
+                showTab(currentTab - 1);
+            }
+        });
+        
+        // Image Upload
+        document.getElementById('upload-btn').addEventListener('click', () => {
+            document.getElementById('image-upload').click();
+        });
+        
+        document.getElementById('image-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-image').src = e.target.result;
+                    document.getElementById('profile-image').classList.remove('hidden');
+                    document.getElementById('image-placeholder').classList.add('hidden');
+                    
+                    // Update preview
+                    document.getElementById('preview-image').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Add Education
+        document.getElementById('add-education').addEventListener('click', () => {
+            const container = document.getElementById('education-container');
+            const template = `
+                <div class="education-entry mb-4 p-4 border border-gray-200 rounded mt-4">
+                    <button type="button" class="remove-education float-right text-red-500 hover:text-red-700">×</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Degree</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 degree">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Institution</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 institution">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                            <input type="month" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 start-date">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                            <input type="month" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 end-date">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 description" rows="2"></textarea>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', template);
+            
+            // Add event listener for remove button
+            const lastItem = container.lastElementChild;
+            lastItem.querySelector('.remove-education').addEventListener('click', () => {
+                container.removeChild(lastItem);
+            });
+        });
+        
+        // Add Experience
+        document.getElementById('add-experience').addEventListener('click', () => {
+            const container = document.getElementById('experience-container');
+            const template = `
+                <div class="experience-entry mb-4 p-4 border border-gray-200 rounded mt-4">
+                    <button type="button" class="remove-experience float-right text-red-500 hover:text-red-700">×</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 job-title">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Company</label>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 company">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                            <input type="month" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 start-date">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                            <input type="month" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 end-date">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <textarea class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 description" rows="3" placeholder="Describe your responsibilities and achievements"></textarea>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', template);
+            
+            // Add event listener for remove button
+            const lastItem = container.lastElementChild;
+            lastItem.querySelector('.remove-experience').addEventListener('click', () => {
+                container.removeChild(lastItem);
+            });
+        });
+        
+        // Add Skill
+        document.getElementById('add-skill').addEventListener('click', () => {
+            const skillInput = document.getElementById('skill-input');
+            const skill = skillInput.value.trim();
+            
+            if (skill) {
+                const container = document.getElementById('skills-container');
+                
+                // Check if skill already exists
+                const existingSkills = Array.from(container.querySelectorAll('.skill-tag'))
+                    .map(tag => tag.textContent.replace('×', '').trim());
+                
+                if (!existingSkills.includes(skill)) {
+                    const span = document.createElement('span');
+                    span.className = 'skill-tag px-3 py-1 rounded-full text-sm';
+                    span.textContent = skill;
+                    
+                    const removeBtn = document.createElement('span');
+                    removeBtn.className = 'cursor-pointer ml-1 text-gray-500 hover:text-red-500';
+                    removeBtn.innerHTML = '&times;';
+                    removeBtn.addEventListener('click', function() {
+                        container.removeChild(span);
+                        updateSkillsPreview();
+                    });
+                    
+                    span.appendChild(removeBtn);
+                    container.appendChild(span);
+                    skillInput.value = '';
+                    
+                    // Update preview immediately
+                    updateSkillsPreview();
+                } else {
+                    alert('This skill already exists!');
+                }
+            }
+        });
+
+        // Also allow adding skills by pressing Enter key
+        document.getElementById('skill-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('add-skill').click();
+            }
+        });
+        
+        // Real-time Preview Updates
+        document.getElementById('full-name').addEventListener('input', (e) => {
+            document.getElementById('preview-name').textContent = e.target.value;
+        });
+        
+        document.getElementById('job-title').addEventListener('input', (e) => {
+            document.getElementById('preview-title').textContent = e.target.value;
+        });
+        
+        document.getElementById('email').addEventListener('input', (e) => {
+            document.getElementById('preview-email').textContent = e.target.value;
+        });
+        
+        document.getElementById('phone').addEventListener('input', (e) => {
+            document.getElementById('preview-phone').textContent = e.target.value;
+        });
+        
+        document.getElementById('location').addEventListener('input', (e) => {
+            document.getElementById('preview-location').textContent = e.target.value;
+        });
+        
+        document.getElementById('summary').addEventListener('input', (e) => {
+            document.getElementById('preview-summary').textContent = e.target.value;
+        });
+        
+        document.getElementById('projects').addEventListener('input', (e) => {
+            document.getElementById('preview-projects').textContent = e.target.value;
+        });
+        
+        document.getElementById('certifications').addEventListener('input', (e) => {
+            document.getElementById('preview-certifications').textContent = e.target.value;
+        });
+        
+        document.getElementById('languages').addEventListener('input', (e) => {
+            document.getElementById('preview-languages').textContent = e.target.value;
+        });
+        
+        // Auto-update education preview
+        document.getElementById('education-container').addEventListener('input', (e) => {
+            if (e.target.classList.contains('degree') || 
+                e.target.classList.contains('institution') || 
+                e.target.classList.contains('start-date') || 
+                e.target.classList.contains('end-date') || 
+                e.target.classList.contains('description')) {
+                    
+                updateEducationPreview();
+            }
+        });
+        
+        function updateEducationPreview() {
+            const container = document.getElementById('preview-education');
+            container.innerHTML = '';
+            
+            document.querySelectorAll('.education-entry').forEach(entry => {
+                const degree = entry.querySelector('.degree').value;
+                const institution = entry.querySelector('.institution').value;
+                const startDate = formatDate(entry.querySelector('.start-date').value);
+                const endDate = formatDate(entry.querySelector('.end-date').value);
+                const description = entry.querySelector('.description').value;
+                
+                if (degree || institution) {
+                    const div = document.createElement('div');
+                    div.className = 'mb-4';
+                    
+                    let html = `
+                        <div class="flex justify-between">
+                            <h4 class="font-semibold">${degree || 'Degree'}</h4>
+                            <span class="text-sm text-gray-600">${startDate}${startDate && endDate ? ' - ' : ''}${endDate}</span>
+                        </div>
+                        <p class="text-sm font-medium text-gray-600">${institution || 'Institution'}</p>
+                    `;
+                    
+                    if (description) {
+                        html += `<p class="text-sm">${description}</p>`;
+                    }
+                    
+                    div.innerHTML = html;
+                    container.appendChild(div);
+                }
+            });
+        }
+        
+        // Auto-update experience preview
+        document.getElementById('experience-container').addEventListener('input', (e) => {
+            if (e.target.classList.contains('job-title') || 
+                e.target.classList.contains('company') || 
+                e.target.classList.contains('start-date') || 
+                e.target.classList.contains('end-date') || 
+                e.target.classList.contains('description')) {
+                    
+                updateExperiencePreview();
+            }
+        });
+        
+        function updateExperiencePreview() {
+            const container = document.getElementById('preview-experience');
+            container.innerHTML = '';
+            
+            document.querySelectorAll('.experience-entry').forEach(entry => {
+                const jobTitle = entry.querySelector('.job-title').value;
+                const company = entry.querySelector('.company').value;
+                const startDate = formatDate(entry.querySelector('.start-date').value);
+                const endDate = formatDate(entry.querySelector('.end-date').value);
+                const description = entry.querySelector('.description').value;
+                
+                if (jobTitle || company) {
+                    const div = document.createElement('div');
+                    div.className = 'mb-4';
+                    
+                    let html = `
+                        <div class="flex justify-between">
+                            <h4 class="font-semibold">${jobTitle || 'Job Title'}</h4>
+                            <span class="text-sm text-gray-600">${startDate}${startDate && endDate ? ' - ' : ''}${endDate}</span>
+                        </div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">${company || 'Company'}</p>
+                    `;
+                    
+                    if (description) {
+                        html += `<p class="text-sm">${description}</p>`;
+                    }
+                    
+                    div.innerHTML = html;
+                    container.appendChild(div);
+                }
+            });
+        }
+        
+        // Auto-update skills preview
+        document.getElementById('skills-container').addEventListener('click', (e) => {
+            if (e.target.classList.contains('skill-tag') || e.target.parentNode.classList.contains('skill-tag')) {
+                updateSkillsPreview();
+            }
+        });
+        
+        function updateSkillsPreview() {
+            const container = document.getElementById('preview-skills');
+            container.innerHTML = '';
+            
+            document.querySelectorAll('#skills-container .skill-tag').forEach(skill => {
+                if (skill.textContent !== '×') {
+                    const span = document.createElement('span');
+                    span.className = 'bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded';
+                    span.textContent = skill.textContent.replace('×', '').trim();
+                    container.appendChild(span);
+                }
+            });
+        }
+        
+        // Helper function to format date (YYYY-MM) to Month YYYY
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return '';
+            
+            const options = { year: 'numeric', month: 'short' };
+            return date.toLocaleDateString('en-US', options);
+        }
+        
+        // Export to PDF
+        document.getElementById('print-btn').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const resume = document.getElementById('resume-preview');
+            
+            // Add scaling for better quality
+            const scale = 2; 
+            const options = {
+                scale: scale,
+                useCORS: true,
+                logging: true,
+                allowTaint: true
+            };
+
+            html2canvas(resume, options).then(canvas => {
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+                pdf.save('resume_' + new Date().toISOString().slice(0, 10) + '.pdf');
+            });
+        });
+        
+        
+// Change resume primary color
+document.getElementById('color-picker').addEventListener('input', function (e) {
+  const color = e.target.value;
+  document.documentElement.style.setProperty('--primary', color);
+
+  // Generate a light version of the color (simple method)
+  const lightColor = tinycolor(color).lighten(30).toString();
+  document.documentElement.style.setProperty('--primary-light', lightColor);
+
+  // Update preview skill tags
+  updateSkillsPreview();
+});
+
+// Change resume font
+document.getElementById('font-picker').addEventListener('change', function (e) {
+  const font = e.target.value;
+  document.documentElement.style.setProperty('--resume-font', font);
+});
+
+
+        
+// Add Soft Skill
+document.getElementById('add-soft-skill').addEventListener('click', () => {
+    const input = document.getElementById('soft-skill-input');
+    const value = input.value.trim();
+    if (value) {
+        const li = document.createElement('li');
+        li.textContent = value;
+
+        // Add to UI list
+        document.getElementById('soft-skills-list').appendChild(li);
+
+        // Also update preview list
+        const previewLi = document.createElement('li');
+        previewLi.textContent = value;
+        document.getElementById('preview-soft-skills').appendChild(previewLi);
+
+        input.value = '';
+    }
+});
+
+
+
+
+
+document.getElementById('toggle-experience-section').addEventListener('change', function() {
+    const experienceSection = Array.from(document.querySelectorAll('#resume-preview .resume-section-title'))
+        .find(h3 => h3.textContent.trim() === 'PROFESSIONAL EXPERIENCE')?.parentElement;
+
+    if (experienceSection) {
+        if (this.checked) {
+            experienceSection.style.display = 'block';
+        } else {
+            experienceSection.style.display = 'none';
+        }
+    }
+});
+
+
+        // Initialize preview with default values
+        updateEducationPreview();
+        updateExperiencePreview();
+        updateSkillsPreview();
+        
+        // This function would be connected to the Python backend in the full implementation
+        function saveResumeData() {
+            // In a real implementation, this would send data to the Python backend
+            const resumeData = {
+                personal: {
+                    name: document.getElementById('full-name').value,
+                    title: document.getElementById('job-title').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    location: document.getElementById('location').value,
+                    summary: document.getElementById('summary').value,
+                    profileImage: document.getElementById('profile-image').src
+                },
+                education: Array.from(document.querySelectorAll('.education-entry')).map(entry => ({
+                    degree: entry.querySelector('.degree').value,
+                    institution: entry.querySelector('.institution').value,
+                    startDate: entry.querySelector('.start-date').value,
+                    endDate: entry.querySelector('.end-date').value,
+                    description: entry.querySelector('.description').value
+                })),
+                experience: Array.from(document.querySelectorAll('.experience-entry')).map(entry => ({
+                    jobTitle: entry.querySelector('.job-title').value,
+                    company: entry.querySelector('.company').value,
+                    startDate: entry.querySelector('.start-date').value,
+                    endDate: entry.querySelector('.end-date').value,
+                    description: entry.querySelector('.description').value
+                })),
+                skills: Array.from(document.querySelectorAll('#skills-container .skill-tag'))
+                    .map(skill => skill.textContent.replace('×', '').trim())
+                    .filter(text => text),
+                projects: document.getElementById('projects').value,
+                certifications: document.getElementById('certifications').value,
+                languages: document.getElementById('languages').value
+            };
+            
+            console.log('Resume data to be sent to Python backend:', resumeData);
+            // In actual implementation: fetch('/save-resume', { method: 'POST', body: JSON.stringify(resumeData) })
+            
+            alert('In a full implementation, this would save to the Python backend. Check console for simulated data.');
+        }
+    </script>
+
+    <!-- Python Backend Comments -->
+    <!-- 
+        # Python Backend Implementation Overview (Flask Example)
+        
+        from flask import Flask, request, jsonify, send_file
+        import os
+        from werkzeug.utils import secure_filename
+        
+        app = Flask(__name__)
+        app.config['UPLOAD_FOLDER'] = 'uploads'
+        
+        @app.route('/save-resume', methods=['POST'])
+        def save_resume():
+            data = request.get_json()
+            # Process and save resume data
+            # Generate PDF (could use reportlab or another PDF library)
+            # Return success response or the generated PDF
+            return jsonify({'status': 'success'})
+        
+        @app.route('/upload-image', methods=['POST'])
+        def upload_image():
+            if 'file' not in request.files:
+                return jsonify({'error': 'No file part'})
+            
+            file = request.files['file']
+            if file.filename == '':
+                return jsonify({'error': 'No selected file'})
+            
+            if file:
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                return jsonify({'url': f'/uploads/{filename}'})
+        
+        if __name__ == '__main__':
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            app.run(debug=True)
+    -->
+</body>
+</html>
+
