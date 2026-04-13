@@ -83,7 +83,9 @@ http://127.0.0.1:5000/
 
 **Kruthikashree SK**
 MCA Student – Web Technology Enthusiast
+<br>
 🔗 GitHub: https://github.com/kruthikashry
+<br>
 🔗 LinkedIn: www.linkedin.com/in/kruthikashree-sk
 
 ---
